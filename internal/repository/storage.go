@@ -9,3 +9,7 @@ type Storage struct {
 func NewStorage(pgConnPool *pgxpool.Pool) *Storage {
 	return &Storage{pgConnPool: pgConnPool}
 }
+
+func (s *Storage) GetPgConnPool() *pgxpool.Pool {
+	return s.pgConnPool
+}

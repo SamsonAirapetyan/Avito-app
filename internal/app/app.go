@@ -2,6 +2,8 @@ package app
 
 import (
 	config2 "SergeyProject/config"
+	"SergeyProject/internal/controller/handler"
+	"SergeyProject/internal/domain/usecase"
 	"SergeyProject/internal/repository"
 	logger "SergeyProject/pkg/logger"
 	"SergeyProject/pkg/postgres"
@@ -36,9 +38,19 @@ func Run() {
 }
 
 func InitRouter(storage *repository.Storage) *mux.Router {
+	// register new Repository (DB)
+	privilegeRepository := repository.NewPrivilegeRepository(storage)
+	//counterRepository := repository.NewCounterRepository()
+
+	// register Business logic
+	privilegeUsercase := usecase.NewPrivilegeUsecase(privilegeRepository)
+	// register Handlers
+	privilegeHandlers := handler.NewPrivilegeHandler(privilegeUsercase)
 
 	//router initialization
 	router := mux.NewRouter()
+	privilegeHandlers.Register(router)
+
 	return router
 }
 
