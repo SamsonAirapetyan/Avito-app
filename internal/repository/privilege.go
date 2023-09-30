@@ -50,3 +50,31 @@ func (pr *PrivilegeRepository) GetRecordByTitle(ctx context.Context, title strin
 	}
 	return entity, nil
 }
+
+func (pr *PrivilegeRepository) CreatePrivilege(ctx context.Context, req *entity.Privilege) error {
+	query := `INSERT INTO privileges(privileges_title, created_at) VALUES ($1,$2)`
+
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pr.storage.GetPgConnPool().Acquire(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return nil
+	}
+	defer tx.Rollback(ctx)
+	_, err = tx.Exec(ctx, query, req.PrivilegeTitle, req.CreatedAt)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -35,3 +35,26 @@ func (ph *PrivilegeHandler) handlePrivilegeGetByTitle(rw http.ResponseWriter, r 
 	}
 	rw.WriteHeader(http.StatusOK)
 }
+
+func (ph *PrivilegeHandler) handlePrivilegeCreate(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+	ctx := r.Context()
+	req := &dto.PrivilegeDTO{}
+	if err := utils.StructDecode(r, req); err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err := ph.privilegeUsecases.CreatePrivilege(ctx, req)
+	if err != nil {
+		if err == errors.ErrRecordAlreadyExists {
+			ph.logger.Error("Cannot create a record because record with such name already exists", "error", err)
+			http.Error(rw, err.Error(), http.StatusBadRequest)
+			return
+		}
+		ph.logger.Error("Internal error", "error", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rw.WriteHeader(http.StatusCreated)
+	rw.Write([]byte("REcord has been created.\n"))
+}
