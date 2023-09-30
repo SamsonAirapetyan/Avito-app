@@ -23,4 +23,6 @@ func (ph *PrivilegeHandler) Register(router *mux.Router) {
 	getRouter.HandleFunc("/priv", ph.handlePrivilegeGetByTitle)
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/priv", ph.handlePrivilegeCreate)
+	deleteRouter := router.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/priv/{id:[0-9]+}", ph.handlerPrivilegeDelete)
 }

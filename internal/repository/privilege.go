@@ -51,8 +51,38 @@ func (pr *PrivilegeRepository) GetRecordByTitle(ctx context.Context, title strin
 	return entity, nil
 }
 
+func (pr *PrivilegeRepository) GetRecordByID(ctx context.Context, priv_id int) (string, error) {
+	query := `SELECT * FROM privileges WHERE id = $1 `
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	entity := &entity.Privilege{}
+	conn, err := pr.storage.GetPgConnPool().Acquire(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Release()
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer tx.Rollback(ctx)
+
+	if err = tx.QueryRow(ctx, query, priv_id).Scan(&entity.ID, &entity.PrivilegeTitle, &entity.CreatedAt); err != nil {
+		if err == pgx.ErrNoRows {
+			return "", errors.ErrNoRecordFound
+		}
+		return "", err
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return "", err
+	}
+	return entity.PrivilegeTitle, nil
+}
+
 func (pr *PrivilegeRepository) CreatePrivilege(ctx context.Context, req *entity.Privilege) error {
-	query := `INSERT INTO privileges(privileges_title, created_at) VALUES ($1,$2)`
+	query := `INSERT INTO privileges(privilege_title, created_at) VALUES ($1,$2)`
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -73,6 +103,32 @@ func (pr *PrivilegeRepository) CreatePrivilege(ctx context.Context, req *entity.
 	}
 
 	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (pr *PrivilegeRepository) DeletePrivilege(ctx context.Context, id int) error {
+	query := `DELETE FROM privileges WHERE id = $1`
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pr.storage.GetPgConnPool().Acquire(context.Background())
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, query, id); err != nil {
+		return err
+	}
+	err = tx.Commit(context.Background())
 	if err != nil {
 		return err
 	}

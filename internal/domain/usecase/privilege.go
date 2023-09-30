@@ -33,6 +33,14 @@ func (ps *PrivilegeUsecase) GetRecordByTitle(ctx context.Context, req *dto.Privi
 	return resp, nil
 }
 
+func (ps *PrivilegeUsecase) GetRecordByID(ctx context.Context, priv_id int) (string, error) {
+	privilege, err := ps.repo.GetRecordByID(ctx, priv_id)
+	if err != nil {
+		return "", err
+	}
+	return privilege, nil
+}
+
 func (ps *PrivilegeUsecase) CreatePrivilege(ctx context.Context, req *dto.PrivilegeDTO) error {
 	validate := utils.NewValidator()
 	if err := validate.Struct(req); err != nil {
@@ -56,6 +64,21 @@ func (ps *PrivilegeUsecase) CreatePrivilege(ctx context.Context, req *dto.Privil
 	}
 
 	if err = ps.repo.CreatePrivilege(ctx, entity); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ps *PrivilegeUsecase) DeletePrivilege(ctx context.Context, id int) error {
+	_, err := ps.GetRecordByID(ctx, id)
+	if err != nil {
+		if err == errors.ErrNoRecordFound {
+			return errors.ErrNoRecordFound
+		}
+		return err
+	}
+	if err = ps.repo.DeletePrivilege(ctx, id); err != nil {
 		return err
 	}
 
