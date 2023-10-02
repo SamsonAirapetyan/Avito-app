@@ -62,6 +62,35 @@ func (ph *PrivilegeHandler) handlePrivilegeCreate(rw http.ResponseWriter, r *htt
 	rw.Write([]byte("REcord has been created.\n"))
 }
 
+func (ph *PrivilegeHandler) handlerAttachPrivilegeToUser(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+	ctx := r.Context()
+	req := &dto.PrivilegedUserCreateDTO{}
+	if err := utils.StructDecode(r, req); err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+	priv, err := ph.privilegeUsecases.AddPrivilegeToUser(ctx, req)
+	if err != nil {
+		if err == errors.ErrNoRecordFound {
+			ph.logger.Error("No privilege record with such title exists", "error", err)
+			http.Error(rw, err.Error(), http.StatusNotFound)
+			return
+		} else if err == errors.ErrRecordAlreadyExists {
+			ph.logger.Error("Such privilege is already assigned to the user", "privilege", priv, "error", err)
+			http.Error(rw, fmt.Sprintf("%s: %s", err.Error(), priv), http.StatusBadRequest)
+			return
+		}
+
+		ph.logger.Error("Internal error", "message", err.Error())
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(http.StatusCreated)
+	rw.Write([]byte(`{"message": "Records have been created"}`))
+}
+
 func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -81,4 +110,22 @@ func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *ht
 	}
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte(fmt.Sprintf(`{"message": "Record has been deleted", "privilege_id": %d}}.`, id)))
+}
+
+func (ph *PrivilegeHandler) handlerGetAllUsers(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+	ctx := r.Context()
+	records, err := ph.privilegeUsecases.GetAllUsers(ctx)
+	if err != nil {
+		ph.logger.Error("Couldn't get records from privilege table", "error", err)
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err = utils.ToJSON(records, rw); err != nil {
+		ph.logger.Error("JSON sezialisation didn't complete successfuly", "error", err.Error())
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rw.WriteHeader(http.StatusOK)
 }
