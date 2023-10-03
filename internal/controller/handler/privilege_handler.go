@@ -91,6 +91,31 @@ func (ph *PrivilegeHandler) handlerAttachPrivilegeToUser(rw http.ResponseWriter,
 	rw.Write([]byte(`{"message": "Records have been created"}`))
 }
 
+func (ph *PrivilegeHandler) handlerRemovePrivilegeToUser(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+	ctx := r.Context()
+	req := &dto.PrivilegedUserDeleteDTO{}
+	if err := utils.StructDecode(r, req); err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+	priv, err := ph.privilegeUsecases.RemoveUserPrivilege(ctx, req)
+	if err != nil {
+		if err == errors.ErrNoRecordFound {
+			ph.logger.Error("No privilege record with such title attached to the user", "error", err)
+			http.Error(rw, fmt.Sprintf("%s: %s", err.Error(), priv), http.StatusNotFound)
+			return
+		}
+
+		ph.logger.Error("Internal error", "message", err.Error())
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte(`{"message": "Privileges have been deleted"}`))
+}
+
 func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -128,4 +153,27 @@ func (ph *PrivilegeHandler) handlerGetAllUsers(rw http.ResponseWriter, r *http.R
 		return
 	}
 	rw.WriteHeader(http.StatusOK)
+}
+
+func (ph *PrivilegeHandler) handlerPrivilegeUserDelete(rw http.ResponseWriter, r *http.Request) {
+	rw.Header().Add("Content-Type", "application/json")
+	ctx := r.Context()
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+	err := ph.privilegeUsecases.DeletePrivilegedUser(ctx, id)
+	if err != nil {
+		if err == errors.ErrNoRecordFound {
+			ph.logger.Error("No privileged user record with such id has been found", "error", err)
+			http.Error(rw, err.Error(), http.StatusNotFound)
+			return
+		}
+
+		ph.logger.Error("Internal error", "message", err.Error())
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte(fmt.Sprintf(`{"message": "Record has been deleted", "deleted privileged user id": %d}`, id)))
+
 }

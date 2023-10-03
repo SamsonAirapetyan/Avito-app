@@ -201,6 +201,33 @@ func (pr *PrivilegeRepository) AddPrivilegeToUser(ctx context.Context, user_id i
 	return nil
 }
 
+func (pr *PrivilegeRepository) RemoveUserPrivilege(ctx context.Context, user_id int, priv_id int) error {
+	query := `DELETE FROM privileged_users WHERE user_id = $1 AND privilege_id = $2`
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pr.storage.GetPgConnPool().Acquire(context.Background())
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	_, err = tx.Exec(ctx, query, user_id, priv_id)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (pr *PrivilegeRepository) GetAllUsers(ctx context.Context) ([]*entity.PrivilegedUser, error) {
 	query := `SELECT * FROM privileged_users`
 
@@ -241,4 +268,61 @@ func (pr *PrivilegeRepository) GetAllUsers(ctx context.Context) ([]*entity.Privi
 	}
 
 	return entities, nil
+}
+
+func (pr *PrivilegeRepository) GetUserByID(ctx context.Context, user_id int) (int, error) {
+	query := `SELECT * FROM privileged_users WHERE user_id = $1`
+	entuty := &entity.PrivilegedUser{}
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pr.storage.GetPgConnPool().Acquire(ctx)
+	if err != nil {
+		return -1, err
+	}
+	defer conn.Release()
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return -1, err
+	}
+	defer tx.Rollback(ctx)
+
+	if err := tx.QueryRow(ctx, query, user_id).Scan(&entuty.UserID, &entuty.PrivilegeID, &entuty.AssignedAt); err != nil {
+		if err == pgx.ErrNoRows {
+			return -1, errors.ErrNoRecordFound
+		}
+		return entuty.UserID, nil
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return -1, err
+	}
+	return entuty.UserID, nil
+}
+
+func (pr *PrivilegeRepository) DeletePrivilegeUser(ctx context.Context, user_id int) error {
+	query := `DELETE FROM privileged_users WHERE user_id = $1`
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	conn, err := pr.storage.GetPgConnPool().Acquire(context.Background())
+	if err != nil {
+		return err
+	}
+	defer conn.Release()
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	_, err = tx.Exec(ctx, query, user_id)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

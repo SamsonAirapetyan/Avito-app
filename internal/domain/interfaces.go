@@ -13,8 +13,10 @@ type (
 		CreatePrivilege(context.Context, *dto.PrivilegeDTO) error
 		DeletePrivilege(context.Context, int) error
 
-		AddPrivilegeToUser(ctx context.Context, createDTO *dto.PrivilegedUserCreateDTO) (string, error)
+		AddPrivilegeToUser(context.Context, *dto.PrivilegedUserCreateDTO) (string, error)
 		GetAllUsers(context.Context) ([]*dto.PrivilegedUserDTO, error)
+		RemoveUserPrivilege(context.Context, *dto.PrivilegedUserDeleteDTO) (string, error)
+		DeletePrivilegedUser(context.Context, int) error
 	}
 
 	IPrivilegeRepository interface {
@@ -26,5 +28,8 @@ type (
 		GetUserPrivilegesByID(context.Context, int) ([]int, error)
 		AddPrivilegeToUser(context.Context, int, int) error
 		GetAllUsers(context.Context) ([]*entity.PrivilegedUser, error)
+		GetUserByID(context.Context, int) (int, error)
+		RemoveUserPrivilege(context.Context, int, int) error
+		DeletePrivilegeUser(context.Context, int) error
 	}
 )
