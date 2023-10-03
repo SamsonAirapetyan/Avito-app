@@ -21,6 +21,11 @@ func NewPrivilegeUsecase(repo domain.IPrivilegeRepository) *PrivilegeUsecase {
 	return &PrivilegeUsecase{logger: logger.GetLogger(), repo: repo}
 }
 
+/*
+GetRecordByTitle
+
+Функция для получения данных о привилегии по её названию
+*/
 func (ps *PrivilegeUsecase) GetRecordByTitle(ctx context.Context, req *dto.PrivilegeDTO) (*dto.PrivilegeResponseDTO, error) {
 	record, err := ps.repo.GetRecordByTitle(ctx, req.PrivilegeTitle)
 	if err != nil {
@@ -33,6 +38,11 @@ func (ps *PrivilegeUsecase) GetRecordByTitle(ctx context.Context, req *dto.Privi
 	return resp, nil
 }
 
+/*
+GetRecordByID
+
+Функция для получения наименования привиегии по её id
+*/
 func (ps *PrivilegeUsecase) GetRecordByID(ctx context.Context, priv_id int) (string, error) {
 	privilege, err := ps.repo.GetRecordByID(ctx, priv_id)
 	if err != nil {
@@ -41,6 +51,11 @@ func (ps *PrivilegeUsecase) GetRecordByID(ctx context.Context, priv_id int) (str
 	return privilege, nil
 }
 
+/*
+CreatePrivilege
+
+Функция для создания новой привилегии. Сначала проводится валидация данных, затем в Бд добавляется новая привилегия
+*/
 func (ps *PrivilegeUsecase) CreatePrivilege(ctx context.Context, req *dto.PrivilegeDTO) error {
 	validate := utils.NewValidator()
 	if err := validate.Struct(req); err != nil {
@@ -70,6 +85,11 @@ func (ps *PrivilegeUsecase) CreatePrivilege(ctx context.Context, req *dto.Privil
 	return nil
 }
 
+/*
+DeletePrivilege
+
+Функция для удаления привилении
+*/
 func (ps *PrivilegeUsecase) DeletePrivilege(ctx context.Context, id int) error {
 	_, err := ps.GetRecordByID(ctx, id)
 	if err != nil {
@@ -137,6 +157,11 @@ func (ps *PrivilegeUsecase) AddPrivilegeToUser(ctx context.Context, req *dto.Pri
 	return "", nil
 }
 
+/*
+GetAllUsers
+
+Функция для получения всех пользователей
+*/
 func (ps *PrivilegeUsecase) GetAllUsers(ctx context.Context) ([]*dto.PrivilegedUserDTO, error) {
 	records := []*dto.PrivilegedUserDTO{}
 
@@ -156,6 +181,13 @@ func (ps *PrivilegeUsecase) GetAllUsers(ctx context.Context) ([]*dto.PrivilegedU
 	return records, nil
 }
 
+/*
+RemoveUserPrivilege
+
+Функция для удаления привилегий у пользователя. Для начала проводится валидация данных.
+Затем по каждому введенной привилегии ищется id привилегии. После чего определются привилегии принадлежащие данному пользователю.
+Нужные привилегии удаляются
+*/
 func (ps *PrivilegeUsecase) RemoveUserPrivilege(ctx context.Context, req *dto.PrivilegedUserDeleteDTO) (string, error) {
 	validator := utils.NewValidator()
 
@@ -199,6 +231,11 @@ func (ps *PrivilegeUsecase) RemoveUserPrivilege(ctx context.Context, req *dto.Pr
 	return "", nil
 }
 
+/*
+DeletePrivilegedUser
+Удаление пользователя.
+Проверка что пользователь существует, а затем уже вызов функции удаляющей пользователя.
+*/
 func (ps *PrivilegeUsecase) DeletePrivilegedUser(ctx context.Context, user_id int) error {
 	_, err := ps.repo.GetUserByID(ctx, user_id)
 	if err != nil {

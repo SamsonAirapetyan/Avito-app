@@ -10,6 +10,11 @@ import (
 	"strconv"
 )
 
+/*
+handlePrivilegeGetByTitle
+
+	Ручка для получения данных о привиллегии
+*/
 func (ph *PrivilegeHandler) handlePrivilegeGetByTitle(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -39,6 +44,11 @@ func (ph *PrivilegeHandler) handlePrivilegeGetByTitle(rw http.ResponseWriter, r 
 	rw.WriteHeader(http.StatusOK)
 }
 
+/*
+handlePrivilegeCreate
+
+	Ручка для создания привилегии
+*/
 func (ph *PrivilegeHandler) handlePrivilegeCreate(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -62,6 +72,11 @@ func (ph *PrivilegeHandler) handlePrivilegeCreate(rw http.ResponseWriter, r *htt
 	rw.Write([]byte("REcord has been created.\n"))
 }
 
+/*
+handlerAttachPrivilegeToUser
+
+Ручка для добавления пользователю привилегий
+*/
 func (ph *PrivilegeHandler) handlerAttachPrivilegeToUser(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -91,6 +106,11 @@ func (ph *PrivilegeHandler) handlerAttachPrivilegeToUser(rw http.ResponseWriter,
 	rw.Write([]byte(`{"message": "Records have been created"}`))
 }
 
+/*
+handlerRemovePrivilegeToUser
+
+Ручка для удаления привилегии у пользователя
+*/
 func (ph *PrivilegeHandler) handlerRemovePrivilegeToUser(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -116,6 +136,11 @@ func (ph *PrivilegeHandler) handlerRemovePrivilegeToUser(rw http.ResponseWriter,
 	rw.Write([]byte(`{"message": "Privileges have been deleted"}`))
 }
 
+/*
+handlerPrivilegeDelete
+
+Ручка для удаления определенной привилегии
+*/
 func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -137,6 +162,11 @@ func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *ht
 	rw.Write([]byte(fmt.Sprintf(`{"message": "Record has been deleted", "privilege_id": %d}}.`, id)))
 }
 
+/*
+handlerGetAllUsers
+
+Ручка для получения всех пользователей
+*/
 func (ph *PrivilegeHandler) handlerGetAllUsers(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
@@ -155,6 +185,11 @@ func (ph *PrivilegeHandler) handlerGetAllUsers(rw http.ResponseWriter, r *http.R
 	rw.WriteHeader(http.StatusOK)
 }
 
+/*
+handlerPrivilegeUserDelete
+
+Ручка для удаления пользователя с привилегиями
+*/
 func (ph *PrivilegeHandler) handlerPrivilegeUserDelete(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	ctx := r.Context()
