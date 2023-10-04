@@ -28,7 +28,9 @@ type CounterRepository struct {
 }
 
 func NewCounterRepository() *CounterRepository {
-	return &CounterRepository{logger: logger.GetLogger(), storage: make(map[string]int), cmdChan: make(chan Command)}
+	cr := &CounterRepository{logger: logger.GetLogger(), storage: make(map[string]int), cmdChan: make(chan Command)}
+	go cr.ProcessConcurrency()
+	return cr
 }
 
 var replyChan chan int

@@ -337,7 +337,7 @@ func (pr *PrivilegeRepository) GetUserByID(ctx context.Context, user_id int) (in
 		if err == pgx.ErrNoRows {
 			return -1, errors.ErrNoRecordFound
 		}
-		return entuty.UserID, nil
+		return entuty.UserID, err
 	}
 	err = tx.Commit(ctx)
 	if err != nil {

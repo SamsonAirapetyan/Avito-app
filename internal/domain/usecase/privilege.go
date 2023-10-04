@@ -106,7 +106,9 @@ func (ps *PrivilegeUsecase) DeletePrivilege(ctx context.Context, id int) error {
 }
 
 /*
-AddPrivilegeToUser на вход поступает структура ID user и название привилегий которые надо добавить
+AddPrivilegeToUser
+
+На вход поступает структура ID user и название привилегий которые надо добавить
 (1) Сответственно мы для начала проверяем валидность введенных данных
 (2) Затем проходимся по каждой введеной привелегии чтобы определить из БД id такой привелегии
 (3) Далее получаем данные всех имеющихся привилегий у пользователя с введенным id (получаем все id привилегий)
@@ -206,7 +208,7 @@ func (ps *PrivilegeUsecase) RemoveUserPrivilege(ctx context.Context, req *dto.Pr
 			return "", err
 		}
 
-		privilege_list, err := ps.repo.GetUserPrivilegesByID(ctx, User_ID)
+		privilege_list, err := ps.repo.GetUserPrivilegesByID(ctx, req.UserID)
 		if err != nil {
 			return "", err
 		}

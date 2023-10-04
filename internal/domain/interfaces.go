@@ -32,4 +32,10 @@ type (
 		RemoveUserPrivilege(context.Context, int, int) error
 		DeletePrivilegeUser(context.Context, int) error
 	}
+
+	ICounterUsecases interface {
+	}
+
+	ICounterRepository interface {
+	}
 )
