@@ -5,6 +5,7 @@ import (
 	"SergeyProject/pkg/logger"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
+	"net/http"
 )
 
 type CounterHandler struct {
@@ -17,4 +18,8 @@ func NewCounterHandler(counterUsecase domain.ICounterUsecases) *CounterHandler {
 }
 
 func (ch *CounterHandler) Register(router *mux.Router) {
+	getRouter := router.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/set/{val:[0-9]+}", ch.handlerSetCounter).Queries("name", "{[a-z]+}")
+	getRouter.HandleFunc("/set/{val:[0-9]+}", ch.handlerSetCounter)
+	getRouter.HandleFunc("/inc/{val:[0-9]+}", ch.handlerIncreaseCounter).Queries("name", "{[a-z]+}")
 }

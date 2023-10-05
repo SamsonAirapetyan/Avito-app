@@ -54,3 +54,22 @@ func (cr *CounterRepository) ProcessConcurrency() {
 		}
 	}
 }
+
+func (cr *CounterRepository) SetValue(name string, val int) int {
+	cr.storage[name] = val
+	return cr.storage[name]
+}
+
+func (cr *CounterRepository) GetStorage() map[string]int {
+	return cr.storage
+}
+
+func (cr *CounterRepository) IncreaseValue(name string, val int) int {
+	cr.cmdChan <- Command{cmd: Increment, name: name, val: val, replyChan: replyChan}
+	return <-replyChan
+}
+
+func (cr *CounterRepository) DecreaseValue(name string, val int) int {
+	cr.cmdChan <- Command{cmd: Decrement, name: name, val: val, replyChan: replyChan}
+	return <-replyChan
+}

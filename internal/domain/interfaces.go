@@ -34,8 +34,15 @@ type (
 	}
 
 	ICounterUsecases interface {
+		SetValue(string, int) int
+		IncreaseValue(string, int) int
+		DecreaseValue(string, int) int
 	}
 
 	ICounterRepository interface {
+		GetStorage() map[string]int
+		SetValue(string, int) int
+		IncreaseValue(string, int) int
+		DecreaseValue(string, int) int
 	}
 )
