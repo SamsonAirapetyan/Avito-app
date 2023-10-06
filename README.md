@@ -1,6 +1,34 @@
 # Avito-app
 # Тестовое задание для стажёра Backend
 # Сервис динамического сегментирования пользователей
+### Для запуска приложения:
+
+```
+make build && make run
+```
+## Requests (Linux)
+#### Privilege creation:
+
+`curl -XPOST http://localhost:8000/priv -d '{"privilege_title": "AVITO_VOICE_MESSAGES"}'`
+
+#### Attach privileges to specific user:
+
+`curl -XPOST http://localhost:8000/priv/user/add -d '{"user_id":1, "add_privilege": ["AVITO_VOICE_MESSAGES", "AVITO_PERFORMANCE_VAS", "AVITO_DISCOUNT_30"]}'`
+
+#### Remove privileges from specific user:
+
+`curl -XPOST http://localhost:8000/priv/user/remove -d '{"user_id":1, "add_privilege": ["AVITO_VOICE_MESSAGES", "AVITO_DISCOUNT_30"]}'`
+
+#### Get users' privileges:
+
+`curl -XGET http://localhost:8000/priv/user`
+
+#### Get existing privileges:
+
+`curl -XGET http://localhost:8000/priv`
+
+# Тестовое задание для стажёра Backend
+# Сервис динамического сегментирования пользователей
 
 ### Проблема:
 
@@ -81,6 +109,5 @@
 6. Мы можем добавлять сегменты пользователю динамически (он уже состоит в нескольких, мы можем добавить еще несколько, не перетирая существующие).
 7. В методе получения сегментов пользователя мы должны получить АКТУАЛЬНУЮ информацию о сегментах пользователя с задержкой не более 1 минуты после добавления сегмента.
 
-**Запуск Проекта**
 
 
