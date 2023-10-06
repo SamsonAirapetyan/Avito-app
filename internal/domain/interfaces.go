@@ -37,6 +37,7 @@ type (
 		SetValue(string, int) int
 		IncreaseValue(string, int) int
 		DecreaseValue(string, int) int
+		GetStorage() map[string]int
 	}
 
 	ICounterRepository interface {

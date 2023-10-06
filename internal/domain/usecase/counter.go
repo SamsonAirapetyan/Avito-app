@@ -42,3 +42,7 @@ func (cu *CounterUsecase) DecreaseValue(name string, val int) int {
 	}
 	return -1
 }
+
+func (cu *CounterUsecase) GetStorage() map[string]int {
+	return cu.repo.GetStorage()
+}
