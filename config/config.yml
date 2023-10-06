@@ -1,7 +1,7 @@
 PostgresDB:
   user: 'samson'
   password: 'qwerty'
-  host: 'localhost'
+  host: 'db'
   port: '5432'
   dbname: 'postgres'
   sslmode: 'disable'
