@@ -10,6 +10,18 @@ import (
 	"strconv"
 )
 
+// @Summary GetPrivilege
+// @Tags Privilege
+// @Description Get All Privileges
+// @ID GetPrivilege
+// @Accept  json
+// @Produce  json
+// @Param input body dto.PrivilegeDTO true "account info"
+// @Success 200 {object} dto.PrivilegeResponseDTO
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv [get]
 /*
 handlePrivilegeGetByTitle
 
@@ -44,6 +56,18 @@ func (ph *PrivilegeHandler) handlePrivilegeGetByTitle(rw http.ResponseWriter, r 
 	rw.WriteHeader(http.StatusOK)
 }
 
+// @Summary CreatePrivilege
+// @Tags Privilege
+// @Description Create Privileges
+// @ID CreatePrivilege
+// @Accept  json
+// @Produce  json
+// @Param input body dto.PrivilegeDTO true "account info"
+// @Success 201 {object} []byte
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv [post]
 /*
 handlePrivilegeCreate
 
@@ -69,9 +93,21 @@ func (ph *PrivilegeHandler) handlePrivilegeCreate(rw http.ResponseWriter, r *htt
 		return
 	}
 	rw.WriteHeader(http.StatusCreated)
-	rw.Write([]byte("REcord has been created.\n"))
+	rw.Write([]byte("Record has been created.\n"))
 }
 
+// @Summary AddPrivilegeToUser
+// @Tags User
+// @Description Add Privileges to User
+// @ID AddPrivileges
+// @Accept  json
+// @Produce  json
+// @Param input body dto.PrivilegedUserCreateDTO true "account info"
+// @Success 201 {object} []byte
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv/user/add [post]
 /*
 handlerAttachPrivilegeToUser
 
@@ -106,6 +142,18 @@ func (ph *PrivilegeHandler) handlerAttachPrivilegeToUser(rw http.ResponseWriter,
 	rw.Write([]byte(`{"message": "Records have been created"}`))
 }
 
+// @Summary RemovePrivilegeToUser
+// @Tags User
+// @Description Remove Privileges to User
+// @ID RemovePrivileges
+// @Accept  json
+// @Produce  json
+// @Param input body dto.PrivilegedUserDeleteDTO true "account info"
+// @Success 200 {object} []byte
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv/user/remove [post]
 /*
 handlerRemovePrivilegeToUser
 
@@ -136,6 +184,16 @@ func (ph *PrivilegeHandler) handlerRemovePrivilegeToUser(rw http.ResponseWriter,
 	rw.Write([]byte(`{"message": "Privileges have been deleted"}`))
 }
 
+// @Summary DeletePrivilege
+// @Tags Privilege
+// @Description Delete Privilege by id
+// @ID DeletePrivilege
+// @Produce  json
+// @Success 200 {object} []byte
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv/:id [delete]
 /*
 handlerPrivilegeDelete
 
@@ -159,9 +217,19 @@ func (ph *PrivilegeHandler) handlerPrivilegeDelete(rw http.ResponseWriter, r *ht
 		return
 	}
 	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(fmt.Sprintf(`{"message": "Record has been deleted", "privilege_id": %d}}.`, id)))
+	rw.Write([]byte(fmt.Sprintf(`{"message": "Record has been deleted", "privilege_id": %d}`, id)))
 }
 
+// @Summary GetAllUsers
+// @Tags User
+// @Description Get All Users
+// @ID GetUsers
+// @Produce  json
+// @Success 200 {object} []dto.PrivilegedUserDTO
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv/user [get]
 /*
 handlerGetAllUsers
 
@@ -185,6 +253,16 @@ func (ph *PrivilegeHandler) handlerGetAllUsers(rw http.ResponseWriter, r *http.R
 	rw.WriteHeader(http.StatusOK)
 }
 
+// @Summary DeleteUser
+// @Tags User
+// @Description Delete User by id
+// @ID DeleteUser
+// @Produce  json
+// @Success 200 {object} []byte
+// @Failure 400,404
+// @Failure 500
+// @Failure default
+// @Router /priv/user/:id [delete]
 /*
 handlerPrivilegeUserDelete
 

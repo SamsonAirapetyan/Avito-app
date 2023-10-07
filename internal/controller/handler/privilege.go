@@ -1,11 +1,13 @@
 package handler
 
 import (
+	_ "SergeyProject/docs"
 	"SergeyProject/internal/controller"
 	"SergeyProject/internal/domain"
 	"SergeyProject/pkg/logger"
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/go-hclog"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 )
 
@@ -19,10 +21,12 @@ func NewPrivilegeHandler(privilegeUsecases domain.IPrivilegeUsecases) controller
 }
 
 func (ph *PrivilegeHandler) Register(router *mux.Router) {
+	router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8000/swagger/doc.json"))).Methods(http.MethodGet)
+
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/priv", ph.handlePrivilegeGetByTitle) //+
 	getRouter.HandleFunc("/priv/user", ph.handlerGetAllUsers)   //+
-
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/priv", ph.handlePrivilegeCreate)                    //+
 	postRouter.HandleFunc("/priv/user/add", ph.handlerAttachPrivilegeToUser)    //+

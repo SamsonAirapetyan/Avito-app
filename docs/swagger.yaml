@@ -1,0 +1,254 @@
+basePath: /
+definitions:
+  dto.PrivilegeDTO:
+    properties:
+      privilege_title:
+        maxLength: 20
+        type: string
+    required:
+    - privilege_title
+    type: object
+  dto.PrivilegeResponseDTO:
+    properties:
+      id:
+        type: integer
+      privilege_title:
+        type: string
+    type: object
+  dto.PrivilegedUserCreateDTO:
+    properties:
+      add_privilege:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: integer
+    type: object
+  dto.PrivilegedUserDTO:
+    properties:
+      privilege_title:
+        maxLength: 20
+        type: string
+      user_id:
+        type: integer
+    required:
+    - privilege_title
+    type: object
+  dto.PrivilegedUserDeleteDTO:
+    properties:
+      del_privilege:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Dynamic user segmentation service
+  title: Avito App API
+  version: "1.0"
+paths:
+  /priv:
+    get:
+      consumes:
+      - application/json
+      description: Get All Privileges
+      operationId: GetPrivilege
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrivilegeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PrivilegeResponseDTO'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: GetPrivilege
+      tags:
+      - Privilege
+    post:
+      consumes:
+      - application/json
+      description: Create Privileges
+      operationId: CreatePrivilege
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrivilegeDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: CreatePrivilege
+      tags:
+      - Privilege
+  /priv/:id:
+    delete:
+      description: Delete Privilege by id
+      operationId: DeletePrivilege
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: DeletePrivilege
+      tags:
+      - Privilege
+  /priv/user:
+    get:
+      description: Get All Users
+      operationId: GetUsers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PrivilegedUserDTO'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: GetAllUsers
+      tags:
+      - User
+  /priv/user/:id:
+    delete:
+      description: Delete User by id
+      operationId: DeleteUser
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: DeleteUser
+      tags:
+      - User
+  /priv/user/add:
+    post:
+      consumes:
+      - application/json
+      description: Add Privileges to User
+      operationId: AddPrivileges
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrivilegedUserCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: AddPrivilegeToUser
+      tags:
+      - User
+  /priv/user/remove:
+    post:
+      consumes:
+      - application/json
+      description: Remove Privileges to User
+      operationId: RemovePrivileges
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PrivilegedUserDeleteDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+        default:
+          description: ""
+      summary: RemovePrivilegeToUser
+      tags:
+      - User
+swagger: "2.0"
